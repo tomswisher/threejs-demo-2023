@@ -24,11 +24,11 @@ const line = new THREE.Line( geometry, material );
 scene.add( line );
 
 function animate() {
-    requestAnimationFrame( animate );
-    line.rotation.x += 0.01;
-    line.rotation.y += 0.005;
-    line.rotation.z -= 0.01;
-    renderer.render( scene, camera );
+  requestAnimationFrame( animate );
+  line.rotation.x += 0.01;
+  line.rotation.y += 0.005;
+  line.rotation.z -= 0.01;
+  renderer.render( scene, camera );
 }
 
 animate();
