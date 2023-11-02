@@ -15,16 +15,15 @@ camera.lookAt( 0, 0, 0 );
 
 const scene = new THREE.Scene();
 
-const material = new THREE.LineBasicMaterial( { color: 0x000ff } );
-
-const points = [];
-points.push( new THREE.Vector3( -10, 0, 0 ) );
-points.push( new THREE.Vector3( 0, 10, 0 ) );
-points.push( new THREE.Vector3( 10, 0, 0 ) );
-const geometry = new THREE.BufferGeometry().setFromPoints( points );
-const line = new THREE.Line( geometry, material );
-scene.add( line );
-scene.add(new THREE.AmbientLight(0x444444));
+// const material = new THREE.LineBasicMaterial( { color: 0x000ff } );
+// const points = [];
+// points.push( new THREE.Vector3( -10, 0, 0 ) );
+// points.push( new THREE.Vector3( 0, 10, 0 ) );
+// points.push( new THREE.Vector3( 10, 0, 0 ) );
+// const geometry = new THREE.BufferGeometry().setFromPoints( points );
+// const line = new THREE.Line( geometry, material );
+// scene.add( line );
+// scene.add(new THREE.AmbientLight(0x444444));
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -58,9 +57,9 @@ scene.add(particleSystem);
 function animate() {
   requestAnimationFrame( animate );
   controls.update();
-  line.rotation.x += 0.01;
-  line.rotation.y += 0.005;
-  line.rotation.z -= 0.01;
+  // line.rotation.x += 0.01;
+  // line.rotation.y += 0.005;
+  // line.rotation.z -= 0.01;
   if (lamp) {
     lamp.rotation.y += 0.005;
   }
