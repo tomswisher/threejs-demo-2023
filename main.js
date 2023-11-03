@@ -48,12 +48,11 @@ const particleGeometry = new THREE.BufferGeometry();
 const particleCount = 10000;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * 50;
+  posArray[i] = (Math.random() - 0.5) * 10;
 }
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 const particleMaterial = new THREE.PointsMaterial({
-  size: 0.005,
-  transparent: true,
+  size: 0.5,
 });
 const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(particleSystem);
@@ -69,11 +68,11 @@ function animate() {
   }
   posArray.forEach((val, idx) => {
     const i = idx % 3;
-    if (i === 0) {
-      posArray[idx] += 0.01;
-    }
     if (i === 1) {
-      posArray[idx] += 0.01;
+      posArray[idx] += Math.random() * 0.4;
+    }
+    if (posArray[idx] > 30) {
+      posArray[idx] = 0;
     }
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
