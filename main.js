@@ -9,7 +9,12 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+const camera = new THREE.PerspectiveCamera(
+  45,
+  window.innerWidth / window.innerHeight,
+  1,
+  500,
+);
 camera.position.set( 0, 0, 100 );
 camera.lookAt( 0, 0, 0 );
 
@@ -37,7 +42,6 @@ loader.load('lamp.gltf', (gltf) => {
   lamp = gltf.scene;
   lamp.scale.set(10, 10, 10);
   scene.add(lamp);
-  console.log(lamp);
 });
 
 const particleGeometry = new THREE.BufferGeometry();
