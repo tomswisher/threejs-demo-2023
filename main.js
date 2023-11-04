@@ -51,9 +51,38 @@ for (let i = 0; i < particleCount * 3; i++) {
   posArray[i] = (Math.random() - 0.5) * 10;
 }
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particleMaterial = new THREE.PointsMaterial({
-  size: 0.5,
+// const particleMaterial = new THREE.PointsMaterial({
+//   size: 0.5,
+// });
+const particleMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: new THREE.Color('gray') }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
+            // gl_PointSize = 2. * (1. / -mvPosition.z);
+            gl_PointSize = 3.;
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform float uTime;
+        uniform vec3 uColor;
+        varying vec2 vUv;
+        void main() {
+            float alpha = 1. - (uTime - vUv.y * 10.);
+            gl_FragColor = vec4(uColor, alpha);
+        }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
 });
+
 const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(particleSystem);
 
