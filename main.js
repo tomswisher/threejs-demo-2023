@@ -5,6 +5,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const renderer = new THREE.WebGLRenderer({
   alpha: true,
   antialias: true,
+  gammaInput: true,
+  gammaOutput: true,
 });
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
@@ -55,11 +57,9 @@ const particleGeometry = new THREE.BufferGeometry();
 const particleCount = 10000;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = Math.random() * 15;
-  posArray[3 * i + 0] = Math.cos(angle) * radius;
+  posArray[3 * i + 0] = 0;
   posArray[3 * i + 1] = (Math.random() - 0.5) * 30 - 15;
-  posArray[3 * i + 2] = Math.sin(angle) * radius;
+  posArray[3 * i + 2] = 0;
 }
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 const particleMaterial = new THREE.ShaderMaterial({
@@ -93,11 +93,19 @@ const particleMaterial = new THREE.ShaderMaterial({
 const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(particleSystem);
 
+const firmamentMaterial = new THREE.MeshPhysicalMaterial({
+  color: 'darkblue',
+  roughness: 0,
+  envMapIntensity: 1,
+});
+const envMap = new THREE.TextureLoader().load('envMap.png');
+envMap.mapping = THREE.EquirectangularReflectionMapping;
+firmamentMaterial.envMap = envMap;
+
 const firmament = new THREE.Mesh(
   new THREE.SphereGeometry(30, 32, 32),
-  new THREE.MeshBasicMaterial(),
+  firmamentMaterial,
 );
-firmament.material.color.set('darkblue');
 firmament.material.side = THREE.BackSide;
 scene.add(firmament);
 
@@ -131,8 +139,14 @@ function animate() {
       posArray[idx] += Math.random() * 0.4;
       if (posArray[idx] > 25) {
         posArray[idx] = -25;
+        posArray[idx - 1] = 0;
+        posArray[idx + 1] = 0;
       }
     }
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 15;
+    posArray[3 * idx + 0] += 0.05 * Math.cos(angle) * radius;
+    posArray[3 * idx + 2] += 0.05 * Math.sin(angle) * radius;
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
   renderer.render( scene, camera );
