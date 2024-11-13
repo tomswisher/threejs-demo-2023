@@ -58,14 +58,14 @@ const particleCount = 10000;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
   posArray[3 * i + 0] = 0;
-  posArray[3 * i + 1] = (Math.random() - 0.5) * 30 - 15;
+  posArray[3 * i + 1] = 0;
   posArray[3 * i + 2] = 0;
 }
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 const particleMaterial = new THREE.ShaderMaterial({
     uniforms: {
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color('gray') }
+        uColor: { value: new THREE.Color('gold') }
     },
     vertexShader: `
         varying vec2 vUv;
