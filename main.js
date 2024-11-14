@@ -54,44 +54,92 @@ let raycaster = new THREE.Raycaster();
 let pointer = new THREE.Vector2(Infinity, Infinity);
 
 const particleGeometry = new THREE.BufferGeometry();
-const particleCount = 10000;
+const particleGeometry2 = new THREE.BufferGeometry();
+const particleGeometry3 = new THREE.BufferGeometry();
+const particleCount = 100;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
   posArray[3 * i + 0] = 0;
   posArray[3 * i + 1] = 0;
   posArray[3 * i + 2] = 0;
 }
+const posArray2 = new Float32Array(particleCount * 3);
+for (let i = 0; i < particleCount; i++) {
+  posArray2[3 * i + 0] = 0;
+  posArray2[3 * i + 1] = 0;
+  posArray2[3 * i + 2] = 0;
+}
+const posArray3 = new Float32Array(particleCount * 3);
+for (let i = 0; i < particleCount; i++) {
+  posArray3[3 * i + 0] = 0;
+  posArray3[3 * i + 1] = 0;
+  posArray3[3 * i + 2] = 0;
+}
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+particleGeometry2.setAttribute('position', new THREE.BufferAttribute(posArray2, 3));
+particleGeometry3.setAttribute('position', new THREE.BufferAttribute(posArray3, 3));
+const vertexShader = `
+    uniform float uSize;
+    varying vec2 vUv;
+    void main() {
+        vUv = uv;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
+        // gl_PointSize = 10. * (1. / -mvPosition.z);
+        gl_PointSize = uSize;
+        gl_Position = projectionMatrix * mvPosition;
+    }
+`;
+const fragmentShader = `
+    uniform float uTime;
+    uniform vec3 uColor;
+    varying vec2 vUv;
+    void main() {
+        float alpha = 1. - (uTime - vUv.y * 2.);
+        gl_FragColor = vec4(uColor, alpha);
+    }
+`;
 const particleMaterial = new THREE.ShaderMaterial({
     uniforms: {
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color('gold') }
+        uColor: { value: new THREE.Color('gold') },
+        uSize: { value: 10 },
     },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
-            // gl_PointSize = 10. * (1. / -mvPosition.z);
-            gl_PointSize = 3.;
-            gl_Position = projectionMatrix * mvPosition;
-        }
-    `,
-    fragmentShader: `
-        uniform float uTime;
-        uniform vec3 uColor;
-        varying vec2 vUv;
-        void main() {
-            float alpha = 1. - (uTime - vUv.y * 10.);
-            gl_FragColor = vec4(uColor, alpha);
-        }
-    `,
+    vertexShader,
+    fragmentShader,
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending
 });
+const particleMaterial2 = new THREE.ShaderMaterial({
+  uniforms: {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color('red') },
+      uSize: { value: 7 },
+  },
+  vertexShader,
+  fragmentShader,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
+const particleMaterial3 = new THREE.ShaderMaterial({
+  uniforms: {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color('red') },
+      uSize: { value: 7 },
+  },
+  vertexShader,
+  fragmentShader,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
 const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+const particleSystem2 = new THREE.Points(particleGeometry2, particleMaterial2);
+const particleSystem3 = new THREE.Points(particleGeometry3, particleMaterial3);
 scene.add(particleSystem);
+scene.add(particleSystem2);
+scene.add(particleSystem3);
 
 const firmamentMaterial = new THREE.MeshPhysicalMaterial({
   color: 'darkblue',
@@ -118,7 +166,7 @@ function animate() {
   requestAnimationFrame( animate );
   controls.update();
   if (lamp) {
-    lamp.rotation.y += 0.005;
+    lamp.rotation.y += 0.01;
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObject(lamp, true);
     const mesh = lamp.children[0].children[0];
@@ -133,22 +181,46 @@ function animate() {
       }
     }
   }
-  posArray.forEach((val, idx) => {
-    const i = idx % 3;
-    if (i === 1) {
-      posArray[idx] += Math.random() * 0.4;
-      if (posArray[idx] > 25) {
-        posArray[idx] = -25;
-        posArray[idx - 1] = 0;
-        posArray[idx + 1] = 0;
-      }
+  posArray2.forEach((val, i) => {
+    posArray3[i] = val;
+  });
+  posArray.forEach((val, i) => {
+    posArray2[i] = val;
+  });
+  posArray.forEach((val, i) => {
+    if (i % 3 !== 0) {
+      return;
     }
-    const angle = Math.random() * Math.PI * 2;
-    const radius = Math.random() * 15;
-    posArray[3 * idx + 0] += 0.05 * Math.cos(angle) * radius;
-    posArray[3 * idx + 2] += 0.05 * Math.sin(angle) * radius;
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = 1;
+    const x1 = posArray[i + 0];
+    const y1 = posArray[i + 1];
+    const z1 = posArray[i + 2];
+    const x2 = x1 + radius * Math.cos(angle);
+    const y2 = y1 + 0.5;
+    const z2 = z1 + radius * Math.sin(angle);
+    const limit = 29;
+    if (x2 ** 2 + y2 ** 2 + z2 ** 2 > limit ** 2) {
+      const xOut = (x2 ** 2 + y1 ** 2 + z1 ** 2) >= limit ** 2;
+      const yOut = (x1 ** 2 + y2 ** 2 + z1 ** 2) >= limit ** 2;
+      const zOut = (x1 ** 2 + y1 ** 2 + z2 ** 2) >= limit ** 2;
+      posArray[i + 0] = xOut ? x1 : x2;
+      posArray[i + 1] = yOut ? y1 : y2;
+      posArray[i + 2] = zOut ? z1 : z2;
+    } else {
+      posArray[i + 0] = x2;
+      posArray[i + 1] = y2;
+      posArray[i + 2] = z2;
+    }
+    if (posArray[i + 1] >= limit - 2) {
+      posArray[i + 0] = 0;
+      posArray[i + 1] = -1 * limit;
+      posArray[i + 2] = 0;
+    }
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
+  particleSystem2.geometry.attributes.position.needsUpdate = true;
+  particleSystem3.geometry.attributes.position.needsUpdate = true;
   renderer.render( scene, camera );
 }
 
