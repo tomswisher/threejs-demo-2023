@@ -22,25 +22,14 @@ camera.lookAt( 0, 0, 0 );
 
 const scene = new THREE.Scene();
 
-// const material = new THREE.LineBasicMaterial( { color: 0x000ff } );
-// const points = [];
-// points.push( new THREE.Vector3( -10, 0, 0 ) );
-// points.push( new THREE.Vector3( 0, 10, 0 ) );
-// points.push( new THREE.Vector3( 10, 0, 0 ) );
-// const geometry = new THREE.BufferGeometry().setFromPoints( points );
-// const line = new THREE.Line( geometry, material );
-// scene.add( line );
-// scene.add(new THREE.AmbientLight(0x444444));
-
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x444444));
 
-let originalColor;
-
 // Load GLTF lamp model by Kay Lousberg
 let lamp;
+let originalColor;
 const loader = new GLTFLoader();
 loader.load('lamp.gltf', (gltf) => {
   lamp = gltf.scene;
@@ -56,7 +45,7 @@ let pointer = new THREE.Vector2(Infinity, Infinity);
 const particleGeometry = new THREE.BufferGeometry();
 const particleGeometry2 = new THREE.BufferGeometry();
 const particleGeometry3 = new THREE.BufferGeometry();
-const particleCount = 100;
+const particleCount = 1000;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
   posArray[3 * i + 0] = 0;
@@ -166,7 +155,6 @@ function animate() {
   requestAnimationFrame( animate );
   controls.update();
   if (lamp) {
-    lamp.rotation.y += 0.01;
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObject(lamp, true);
     const mesh = lamp.children[0].children[0];
@@ -197,7 +185,7 @@ function animate() {
     const y1 = posArray[i + 1];
     const z1 = posArray[i + 2];
     const x2 = x1 + radius * Math.cos(angle);
-    const y2 = y1 + 0.5;
+    const y2 = y1 + 0.25;
     const z2 = z1 + radius * Math.sin(angle);
     const limit = 29;
     if (x2 ** 2 + y2 ** 2 + z2 ** 2 > limit ** 2) {
@@ -216,6 +204,8 @@ function animate() {
       posArray[i + 0] = 0;
       posArray[i + 1] = -1 * limit;
       posArray[i + 2] = 0;
+      firmament.rotation.y += 0.01;
+      lamp.rotation.y += 0.02;
     }
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
