@@ -45,7 +45,7 @@ let pointer = new THREE.Vector2(Infinity, Infinity);
 const particleGeometry = new THREE.BufferGeometry();
 const particleGeometry2 = new THREE.BufferGeometry();
 const particleGeometry3 = new THREE.BufferGeometry();
-const particleCount = 1000;
+const particleCount = 10000;
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
   posArray[3 * i + 0] = 0;
@@ -73,8 +73,8 @@ const vertexShader = `
     void main() {
         vUv = uv;
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
-        // gl_PointSize = 10. * (1. / -mvPosition.z);
-        gl_PointSize = uSize;
+        gl_PointSize = 0.2 * mvPosition.y;
+        // gl_PointSize = uSize;
         gl_Position = projectionMatrix * mvPosition;
     }
 `;
@@ -83,7 +83,8 @@ const fragmentShader = `
     uniform vec3 uColor;
     varying vec2 vUv;
     void main() {
-        float alpha = 1. - (uTime - vUv.y * 2.);
+        // float alpha = 1. - (uTime - vUv.y * 2.);
+        float alpha = 1. - vUv.y;
         gl_FragColor = vec4(uColor, alpha);
     }
 `;
