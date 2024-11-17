@@ -68,58 +68,58 @@ particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3)
 particleGeometry2.setAttribute('position', new THREE.BufferAttribute(posArray2, 3));
 particleGeometry3.setAttribute('position', new THREE.BufferAttribute(posArray3, 3));
 const vertexShader = `
-    uniform float uSize;
-    varying vec2 vUv;
-    void main() {
-        vUv = uv;
-        vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
-        gl_PointSize = 0.2 * mvPosition.y;
-        // gl_PointSize = uSize;
-        gl_Position = projectionMatrix * mvPosition;
-    }
+  uniform float uSize;
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
+    gl_PointSize = 0.2 * mvPosition.y;
+    // gl_PointSize = uSize;
+    gl_Position = projectionMatrix * mvPosition;
+  }
 `;
 const fragmentShader = `
-    uniform float uTime;
-    uniform vec3 uColor;
-    varying vec2 vUv;
-    void main() {
-        // float alpha = 1. - (uTime - vUv.y * 2.);
-        float alpha = 1. - vUv.y;
-        gl_FragColor = vec4(uColor, alpha);
-    }
+  uniform float uTime;
+  uniform vec3 uColor;
+  varying vec2 vUv;
+  void main() {
+    // float alpha = 1. - (uTime - vUv.y * 2.);
+    float alpha = 1. * uTime;
+    gl_FragColor = vec4(uColor, alpha);
+  }
 `;
 const particleMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-        uTime: { value: 0 },
-        uColor: { value: new THREE.Color('gold') },
-        uSize: { value: 10 },
-    },
-    vertexShader,
-    fragmentShader,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
+  uniforms: {
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color('gold') },
+    uSize: { value: 10 },
+  },
+  vertexShader,
+  // fragmentShader,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
 });
 const particleMaterial2 = new THREE.ShaderMaterial({
   uniforms: {
-      uTime: { value: 0 },
-      uColor: { value: new THREE.Color('red') },
-      uSize: { value: 7 },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color('red') },
+    uSize: { value: 7 },
   },
   vertexShader,
-  fragmentShader,
+  // fragmentShader,
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending
 });
 const particleMaterial3 = new THREE.ShaderMaterial({
   uniforms: {
-      uTime: { value: 0 },
-      uColor: { value: new THREE.Color('red') },
-      uSize: { value: 7 },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color('red') },
+    uSize: { value: 7 },
   },
   vertexShader,
-  fragmentShader,
+  // fragmentShader,
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending
