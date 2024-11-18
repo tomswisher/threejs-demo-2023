@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const particleCount = 200000;
+
 const renderer = new THREE.WebGLRenderer({
   alpha: true,
   antialias: true,
@@ -45,7 +47,7 @@ let pointer = new THREE.Vector2(Infinity, Infinity);
 const particleGeometry = new THREE.BufferGeometry();
 const particleGeometry2 = new THREE.BufferGeometry();
 const particleGeometry3 = new THREE.BufferGeometry();
-const particleCount = 10000;
+
 const posArray = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount; i++) {
   posArray[3 * i + 0] = 0;
@@ -201,7 +203,7 @@ function animate() {
       posArray[i + 1] = y2;
       posArray[i + 2] = z2;
     }
-    if (posArray[i + 1] >= limit - 2) {
+    if (posArray[i + 1] >= limit - 0.3) {
       posArray[i + 0] = 0;
       posArray[i + 1] = -1 * limit;
       posArray[i + 2] = 0;
