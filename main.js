@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const particleCount = 200000;
+const particleCount = Math.pow(10, 5);
 
 const renderer = new THREE.WebGLRenderer({
   alpha: true,
@@ -86,18 +86,19 @@ const fragmentShader = `
   varying vec2 vUv;
   void main() {
     // float alpha = 1. - (uTime - vUv.y * 2.);
-    float alpha = 1. * uTime;
+    // float alpha = 1. * uTime;
+    float alpha = 1.;
     gl_FragColor = vec4(uColor, alpha);
   }
 `;
 const particleMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
-    uColor: { value: new THREE.Color('gold') },
+    uColor: { value: new THREE.Color('red') },
     uSize: { value: 10 },
   },
   vertexShader,
-  // fragmentShader,
+  fragmentShader,
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending
@@ -105,11 +106,11 @@ const particleMaterial = new THREE.ShaderMaterial({
 const particleMaterial2 = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
-    uColor: { value: new THREE.Color('red') },
+    uColor: { value: new THREE.Color('gold') },
     uSize: { value: 7 },
   },
   vertexShader,
-  // fragmentShader,
+  fragmentShader,
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending
@@ -121,7 +122,7 @@ const particleMaterial3 = new THREE.ShaderMaterial({
     uSize: { value: 7 },
   },
   vertexShader,
-  // fragmentShader,
+  fragmentShader,
   transparent: true,
   depthWrite: false,
   blending: THREE.AdditiveBlending
