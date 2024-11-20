@@ -192,7 +192,7 @@ function animate() {
     const y2 = y1 + 0.25;
     const z2 = z1 + radius * Math.sin(angle);
     const limit = 29;
-    if (x2 ** 2 + y2 ** 2 + z2 ** 2 > limit ** 2) {
+    if (x2 ** 2 + y2 ** 2 + z2 ** 2 >= limit ** 2) {
       const xOut = (x2 ** 2 + y1 ** 2 + z1 ** 2) >= limit ** 2;
       const yOut = (x1 ** 2 + y2 ** 2 + z1 ** 2) >= limit ** 2;
       const zOut = (x1 ** 2 + y1 ** 2 + z2 ** 2) >= limit ** 2;
@@ -209,7 +209,7 @@ function animate() {
       posArray[i + 1] = -1 * limit;
       posArray[i + 2] = 0;
       firmament.rotation.y += 0.01;
-      lamp.rotation.y += 0.02;
+      lamp.rotation.y += 0.01;
     }
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
