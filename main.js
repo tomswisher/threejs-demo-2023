@@ -23,6 +23,7 @@ camera.position.set( 10, 10, 100 );
 camera.lookAt( 0, 0, 0 );
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
