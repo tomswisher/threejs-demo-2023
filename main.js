@@ -28,7 +28,7 @@ scene.background = new THREE.Color(0x000000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x444444));
+// scene.add(new THREE.HemisphereLight(0xffffff, 0x444444));
 
 // Load GLTF lamp model by Kay Lousberg
 let lamp;
@@ -76,8 +76,8 @@ const vertexShader = `
   void main() {
     vUv = uv;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
-    gl_PointSize = 0.2 * mvPosition.y;
-    // gl_PointSize = uSize;
+    // gl_PointSize = 0.2 * mvPosition.y;
+    gl_PointSize = uSize;
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -96,7 +96,7 @@ const particleMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
     uColor: { value: new THREE.Color('red') },
-    uSize: { value: 10 },
+    uSize: { value: 2 },
   },
   vertexShader,
   fragmentShader,
@@ -108,7 +108,7 @@ const particleMaterial2 = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
     uColor: { value: new THREE.Color('gold') },
-    uSize: { value: 7 },
+    uSize: { value: 2 },
   },
   vertexShader,
   fragmentShader,
@@ -120,7 +120,7 @@ const particleMaterial3 = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
     uColor: { value: new THREE.Color('red') },
-    uSize: { value: 7 },
+    uSize: { value: 2 },
   },
   vertexShader,
   fragmentShader,
@@ -143,13 +143,12 @@ const firmamentMaterial = new THREE.MeshPhysicalMaterial({
 const envMap = new THREE.TextureLoader().load('envMap.png');
 envMap.mapping = THREE.EquirectangularReflectionMapping;
 firmamentMaterial.envMap = envMap;
-
 const firmament = new THREE.Mesh(
   new THREE.SphereGeometry(30, 32, 32),
   firmamentMaterial,
 );
 firmament.material.side = THREE.BackSide;
-scene.add(firmament);
+// scene.add(firmament);
 
 window.addEventListener('mousemove', (e) => {
   pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -185,12 +184,12 @@ function animate() {
       return;
     }
     const angle = Math.random() * 2 * Math.PI;
-    const radius = 1;
+    const radius = 0.5;
     const x1 = posArray[i + 0];
     const y1 = posArray[i + 1];
     const z1 = posArray[i + 2];
     const x2 = x1 + radius * Math.cos(angle);
-    const y2 = y1 + 0.25;
+    const y2 = y1 + 0.125;
     const z2 = z1 + radius * Math.sin(angle);
     const limit = 29;
     if (x2 ** 2 + y2 ** 2 + z2 ** 2 >= limit ** 2) {
@@ -209,7 +208,7 @@ function animate() {
       posArray[i + 0] = 0;
       posArray[i + 1] = -1 * limit;
       posArray[i + 2] = 0;
-      firmament.rotation.y += 0.01;
+      // firmament.rotation.y += 0.01;
       lamp.rotation.y += 0.01;
     }
   });
