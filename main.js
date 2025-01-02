@@ -199,6 +199,7 @@ function animate() {
       posArray[i + 0] = xOut ? x1 : x2;
       posArray[i + 1] = yOut ? y1 : y2;
       posArray[i + 2] = zOut ? z1 : z2;
+      lamp.rotation.y +- 0.01;
     } else {
       posArray[i + 0] = x2;
       posArray[i + 1] = y2;
@@ -209,7 +210,7 @@ function animate() {
       posArray[i + 1] = -1 * limit;
       posArray[i + 2] = 0;
       // firmament.rotation.y += 0.01;
-      lamp.rotation.y += 0.01;
+      lamp.rotation.y += 0.02;
     }
   });
   particleSystem.geometry.attributes.position.needsUpdate = true;
