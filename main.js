@@ -36,8 +36,8 @@ let originalColor;
 const loader = new GLTFLoader();
 loader.load('lamp.gltf', (gltf) => {
   lamp = gltf.scene;
-  lamp.scale.set(10, 10, 10);
-  lamp.position.set(0, -15, 0)
+  lamp.scale.set(15, 15, 15);
+  lamp.position.set(0, -20, 0)
   scene.add(lamp);
   originalColor = lamp.children[0].children[0].material.color.clone();
 });
