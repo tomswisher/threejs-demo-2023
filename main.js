@@ -45,31 +45,13 @@ loader.load('lamp.gltf', (gltf) => {
 let raycaster = new THREE.Raycaster();
 let pointer = new THREE.Vector2(Infinity, Infinity);
 
-const particleGeometry = new THREE.BufferGeometry();
-const particleGeometry2 = new THREE.BufferGeometry();
-const particleGeometry3 = new THREE.BufferGeometry();
-
-const posArray = new Float32Array(particleCount * 3);
-for (let i = 0; i < particleCount; i++) {
-  posArray[3 * i + 0] = 0;
-  posArray[3 * i + 1] = 0;
-  posArray[3 * i + 2] = 0;
+const particleGeometryA = [];
+const positionsAA = [];
+for (let i = 0; i < 3; i++) {
+  particleGeometryA[i] = new THREE.BufferGeometry();
+  positionsAA[i] = new Float32Array(particleCount * 3);
+  particleGeometryA[i].setAttribute('position', new THREE.BufferAttribute(positionsAA[i], 3));
 }
-const posArray2 = new Float32Array(particleCount * 3);
-for (let i = 0; i < particleCount; i++) {
-  posArray2[3 * i + 0] = 0;
-  posArray2[3 * i + 1] = 0;
-  posArray2[3 * i + 2] = 0;
-}
-const posArray3 = new Float32Array(particleCount * 3);
-for (let i = 0; i < particleCount; i++) {
-  posArray3[3 * i + 0] = 0;
-  posArray3[3 * i + 1] = 0;
-  posArray3[3 * i + 2] = 0;
-}
-particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-particleGeometry2.setAttribute('position', new THREE.BufferAttribute(posArray2, 3));
-particleGeometry3.setAttribute('position', new THREE.BufferAttribute(posArray3, 3));
 const vertexShader = `
   uniform float uSize;
   varying vec2 vUv;
@@ -92,11 +74,12 @@ const fragmentShader = `
     gl_FragColor = vec4(uColor, alpha);
   }
 `;
-const particleMaterial = new THREE.ShaderMaterial({
+const particleMaterialA = [];
+particleMaterialA[0] = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
     uColor: { value: new THREE.Color('red') },
-    uSize: { value: 2 },
+    uSize: { value: 1 },
   },
   vertexShader,
   fragmentShader,
@@ -104,11 +87,11 @@ const particleMaterial = new THREE.ShaderMaterial({
   depthWrite: false,
   blending: THREE.AdditiveBlending
 });
-const particleMaterial2 = new THREE.ShaderMaterial({
+particleMaterialA[1] = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
-    uColor: { value: new THREE.Color('gold') },
-    uSize: { value: 2 },
+    uColor: { value: new THREE.Color('orange') },
+    uSize: { value: 1 },
   },
   vertexShader,
   fragmentShader,
@@ -116,11 +99,11 @@ const particleMaterial2 = new THREE.ShaderMaterial({
   depthWrite: false,
   blending: THREE.AdditiveBlending
 });
-const particleMaterial3 = new THREE.ShaderMaterial({
+particleMaterialA[2] = new THREE.ShaderMaterial({
   uniforms: {
     uTime: { value: 0 },
     uColor: { value: new THREE.Color('red') },
-    uSize: { value: 2 },
+    uSize: { value: 1 },
   },
   vertexShader,
   fragmentShader,
@@ -128,12 +111,11 @@ const particleMaterial3 = new THREE.ShaderMaterial({
   depthWrite: false,
   blending: THREE.AdditiveBlending
 });
-const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-const particleSystem2 = new THREE.Points(particleGeometry2, particleMaterial2);
-const particleSystem3 = new THREE.Points(particleGeometry3, particleMaterial3);
-scene.add(particleSystem);
-scene.add(particleSystem2);
-scene.add(particleSystem3);
+const particleSystemA = [];
+for (let i = 0; i < 3; i++) {
+  particleSystemA[i] = new THREE.Points(particleGeometryA[i], particleMaterialA[i])
+  scene.add(particleSystemA[i]);
+}
 
 const firmamentMaterial = new THREE.MeshPhysicalMaterial({
   color: 'darkblue',
@@ -173,21 +155,21 @@ function animate() {
       }
     }
   }
-  posArray2.forEach((val, i) => {
-    posArray3[i] = val;
+  positionsAA[1].forEach((val, i) => {
+    positionsAA[2][i] = val;
   });
-  posArray.forEach((val, i) => {
-    posArray2[i] = val;
+  positionsAA[0].forEach((val, i) => {
+    positionsAA[1][i] = val;
   });
-  posArray.forEach((val, i) => {
+  positionsAA[0].forEach((val, i) => {
     if (i % 3 !== 0) {
       return;
     }
     const angle = Math.random() * 2 * Math.PI;
     const radius = 0.5;
-    const x1 = posArray[i + 0];
-    const y1 = posArray[i + 1];
-    const z1 = posArray[i + 2];
+    const x1 = positionsAA[0][i + 0];
+    const y1 = positionsAA[0][i + 1];
+    const z1 = positionsAA[0][i + 2];
     const x2 = x1 + radius * Math.cos(angle);
     const y2 = y1 + 0.125;
     const z2 = z1 + radius * Math.sin(angle);
@@ -196,26 +178,26 @@ function animate() {
       const xOut = (x2 ** 2 + y1 ** 2 + z1 ** 2) >= limit ** 2;
       const yOut = (x1 ** 2 + y2 ** 2 + z1 ** 2) >= limit ** 2;
       const zOut = (x1 ** 2 + y1 ** 2 + z2 ** 2) >= limit ** 2;
-      posArray[i + 0] = xOut ? x1 : x2;
-      posArray[i + 1] = yOut ? y1 : y2;
-      posArray[i + 2] = zOut ? z1 : z2;
+      positionsAA[0][i + 0] = xOut ? x1 : x2;
+      positionsAA[0][i + 1] = yOut ? y1 : y2;
+      positionsAA[0][i + 2] = zOut ? z1 : z2;
       lamp.rotation.y +- 0.01;
     } else {
-      posArray[i + 0] = x2;
-      posArray[i + 1] = y2;
-      posArray[i + 2] = z2;
+      positionsAA[0][i + 0] = x2;
+      positionsAA[0][i + 1] = y2;
+      positionsAA[0][i + 2] = z2;
     }
-    if (posArray[i + 1] >= limit - 0.3) {
-      posArray[i + 0] = 0;
-      posArray[i + 1] = -1 * limit;
-      posArray[i + 2] = 0;
+    if (positionsAA[0][i + 1] >= limit - 0.3) {
+      positionsAA[0][i + 0] = 0;
+      positionsAA[0][i + 1] = -1 * limit;
+      positionsAA[0][i + 2] = 0;
       // firmament.rotation.y += 0.01;
       lamp.rotation.y += 0.02;
     }
   });
-  particleSystem.geometry.attributes.position.needsUpdate = true;
-  particleSystem2.geometry.attributes.position.needsUpdate = true;
-  particleSystem3.geometry.attributes.position.needsUpdate = true;
+  for (let i = 0; i < 1; i++) {
+    particleSystemA[i].geometry.attributes.position.needsUpdate = true;
+  }
   renderer.render( scene, camera );
 }
 
